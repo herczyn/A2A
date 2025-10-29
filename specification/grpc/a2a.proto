@@ -378,10 +378,12 @@ message AgentInterface {
 // - Skills; a set of actions/solutions the agent can perform
 // - Default modalities/content types supported by the agent.
 // - Authentication requirements
-// Next ID: 19
+// Next ID: 20
 message AgentCard {
   // The version of the A2A protocol this agent supports.
   string protocol_version = 16;
+  // Scope to be used in ScopedA2AService. Empty for non-scoped.
+  string scope = 19;
   // A human readable name for the agent.
   // Example: "Recipe Agent"
   string name = 1;
