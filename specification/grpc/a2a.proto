@@ -382,7 +382,7 @@ message AgentInterface {
 // - Skills; a set of actions/solutions the agent can perform
 // - Default modalities/content types supported by the agent.
 // - Authentication requirements
-// Next ID: 20
+// Next ID: 21
 message AgentCard {
   // The version of the A2A protocol this agent supports.
   string protocol_version = 16;
@@ -412,7 +412,7 @@ message AgentCard {
   // This field replaces fields "url", "preferred_transport" and
   // "additional_interfaces" and is meant to be a sum of them.
   // If not empty, the other three fields are ignored.
-  repeated AgentInterface supported_interfaces
+  repeated AgentInterface supported_interfaces = 20;
   // The service provider of the agent.
   AgentProvider provider = 4;
   // The version of the agent.
