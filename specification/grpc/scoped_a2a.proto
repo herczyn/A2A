@@ -33,6 +33,7 @@ service ScopedA2AService {
       post: "/{scope=*}/v1/message:send"
       body: "*"
     };
+    option (google.api.method_signature) = "scope";
   }
   // SendStreamingMessage is a streaming call that will return a stream of
   // task update events until the Task is in an interrupted or terminal state.
