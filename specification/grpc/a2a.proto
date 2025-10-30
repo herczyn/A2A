@@ -371,6 +371,8 @@ message AgentInterface {
   // easily extended for many transport protocols. The core ones officially
   // supported are JSONRPC, GRPC and HTTP+JSON.
   string transport = 2;
+  // Transport specific options. For example "scope" for ScopedA2AService.
+  map<string, string> transport_options;
 }
 // --8<-- [end:AgentInterface]
 
@@ -394,12 +396,19 @@ message AgentCard {
   string description = 2;
   // A URL to the address the agent is hosted at. This represents the
   // preferred endpoint as declared by the agent.
-  string url = 3;
+  // DEPRECATED: in favor of "supported_interfaces".
+  string url = 3 [deprecated = true];
   // The transport of the preferred endpoint. If empty, defaults to JSONRPC.
-  string preferred_transport = 14;
+  // DEPRECATED: in favor of "supported_interfaces".
+  string preferred_transport = 14 [deprecated = true];
   // Announcement of additional supported transports. Client can use any of
   // the supported transports.
-  repeated AgentInterface additional_interfaces = 15;
+  // DEPRECATED: in favor of "supported_interfaces".
+  repeated AgentInterface additional_interfaces = 15 [deprecated = true];
+  // Supported transports. Client can use any of the these.
+  // This field replaces fields "url", "preferred_transport" and
+  // "additional_interfaces" and is meant to be a sum of them.
+  repeated AgentInterface supported_interfaces
   // The service provider of the agent.
   AgentProvider provider = 4;
   // The version of the agent.
