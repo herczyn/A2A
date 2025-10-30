@@ -102,6 +102,7 @@ service ScopedA2AService {
     option (google.api.http) = {
       get: "/{scope=*}/v1/card"
     };
+    option (google.api.method_signature) = "scope";
   }
   // Delete a push notification config for a task.
   rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest)
