@@ -372,7 +372,7 @@ message AgentInterface {
   // supported are JSONRPC, GRPC and HTTP+JSON.
   string transport = 2;
   // Transport specific options. For example "scope" for ScopedA2AService.
-  map<string, string> transport_options;
+  map<string, string> transport_options = 3;
 }
 // --8<-- [end:AgentInterface]
 
