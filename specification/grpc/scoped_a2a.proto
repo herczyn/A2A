@@ -23,7 +23,7 @@ option java_package = "com.google.a2a.v1";
 //   interface, only a send and stream custom methods.
 // - Tasks have a get interface and custom cancel and subscribe methods.
 // - TaskPushNotificationConfig are a resource whose parent is a task.
-//   They have get, list and create methods.
+//   They have get, list, create, and delete methods.
 // - AgentCard is a static resource with only a get method.
 service ScopedA2AService {
   // Send a message to the agent. This is a blocking call that will return the
