@@ -1,6 +1,6 @@
 // Older protoc compilers don't understand edition yet.
 syntax = "proto3";
-package a2a.v1;
+package lf.a2a.v1;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -9,11 +9,11 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
-option csharp_namespace = "A2a.V1";
-option go_package = "google.golang.org/a2a/v1";
+option csharp_namespace = "Lf.A2a.V1";
+option go_package = "google.golang.org/lf/a2a/v1";
 option java_multiple_files = true;
 option java_outer_classname = "A2A";
-option java_package = "com.google.a2a.v1";
+option java_package = "com.google.lf.a2a.v1";
 
 // A2AService defines the operations of the A2A protocol.
 service A2AService {
@@ -44,9 +44,7 @@ service A2AService {
   rpc GetTask(GetTaskRequest) returns (Task) {
     option (google.api.http) = {
       get: "/tasks/{id=*}"
-      additional_bindings: {
-        get: "/{tenant}/tasks/{id=*}"
-      }
+      additional_bindings: {get: "/{tenant}/tasks/{id=*}"}
     };
     option (google.api.method_signature) = "id";
   }
@@ -54,9 +52,7 @@ service A2AService {
   rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {
     option (google.api.http) = {
       get: "/tasks"
-      additional_bindings: {
-        get: "/{tenant}/tasks"
-      }
+      additional_bindings: {get: "/{tenant}/tasks"}
     };
   }
   // Cancel a task.
@@ -75,9 +71,7 @@ service A2AService {
   rpc SubscribeToTask(SubscribeToTaskRequest) returns (stream StreamResponse) {
     option (google.api.http) = {
       get: "/tasks/{id=*}:subscribe"
-      additional_bindings: {
-        get: "/{tenant}/tasks/{id=*}:subscribe"
-      }
+      additional_bindings: {get: "/{tenant}/tasks/{id=*}:subscribe"}
     };
   }
 
@@ -97,9 +91,7 @@ service A2AService {
   rpc GetTaskPushNotificationConfig(GetTaskPushNotificationConfigRequest) returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
       get: "/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"
-      additional_bindings: {
-        get: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"
-      }
+      additional_bindings: {get: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"}
     };
     option (google.api.method_signature) = "task_id,id";
   }
@@ -107,9 +99,7 @@ service A2AService {
   rpc ListTaskPushNotificationConfig(ListTaskPushNotificationConfigRequest) returns (ListTaskPushNotificationConfigResponse) {
     option (google.api.http) = {
       get: "/tasks/{task_id=*}/pushNotificationConfigs"
-      additional_bindings: {
-        get: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs"
-      }
+      additional_bindings: {get: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs"}
     };
     option (google.api.method_signature) = "task_id";
   }
@@ -117,18 +107,14 @@ service A2AService {
   rpc GetExtendedAgentCard(GetExtendedAgentCardRequest) returns (AgentCard) {
     option (google.api.http) = {
       get: "/extendedAgentCard"
-      additional_bindings: {
-        get: "/{tenant}/extendedAgentCard"
-      }
+      additional_bindings: {get: "/{tenant}/extendedAgentCard"}
     };
   }
   // Delete a push notification config for a task.
   rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"
-      additional_bindings: {
-        delete: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"
-      }
+      additional_bindings: {delete: "/{tenant}/tasks/{task_id=*}/pushNotificationConfigs/{id=*}"}
     };
     option (google.api.method_signature) = "task_id,id";
   }
