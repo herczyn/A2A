@@ -150,8 +150,9 @@ message SendMessageConfiguration {
   // value of zero is a request to not include any messages. The server MUST NOT
   // return more messages than the provided value, but MAY apply a lower limit.
   optional int32 history_length = 3;
-  // If true, the operation waits until the task reaches a terminal or interrupted state before returning.
-  // Defaults to `false`.
+  // If `true`, the operation MUST wait until the task reaches a terminal state
+  // (`COMPLETED`, `FAILED`, `CANCELED`, `REJECTED`) or an interrupted state
+  // (`INPUT_REQUIRED`, `AUTH_REQUIRED`) before returning. Default is `false`.
   bool blocking = 4;
 }
 
@@ -471,12 +472,10 @@ message AgentCardSignature {
 message TaskPushNotificationConfig {
   // Optional. Tenant ID.
   string tenant = 1;
-  // The ID of the configuration.
-  string id = 2 [(google.api.field_behavior) = REQUIRED];
   // The ID of the task this configuration is associated with.
-  string task_id = 3 [(google.api.field_behavior) = REQUIRED];
+  string task_id = 2 [(google.api.field_behavior) = REQUIRED];
   // The push notification configuration details.
-  PushNotificationConfig push_notification_config = 4 [(google.api.field_behavior) = REQUIRED];
+  PushNotificationConfig push_notification_config = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
@@ -740,10 +739,8 @@ message CreateTaskPushNotificationConfigRequest {
   string tenant = 1;
   // The parent task resource ID.
   string task_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // The ID for the new configuration.
-  string config_id = 3 [(google.api.field_behavior) = REQUIRED];
   // The configuration to create.
-  PushNotificationConfig config = 4 [(google.api.field_behavior) = REQUIRED];
+  PushNotificationConfig config = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Represents a request for the `SubscribeToTask` method.
