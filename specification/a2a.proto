@@ -334,6 +334,9 @@ message Artifact {
   // Optional. The task `generation` at which this artifact was completed; unset
   // while it is still streaming.
   int64 end_generation = 8;
+  // Optional. The originator of this artifact. Artifacts are agent outputs by
+  // default (`ROLE_AGENT`); an artifact written by the client is `ROLE_USER`.
+  Role role = 9;
 }
 
 // `TimelineEntry` is a single, generation-ordered entry in a task's timeline.
@@ -513,6 +516,9 @@ message AgentCapabilities {
   repeated AgentExtension extensions = 3;
   // Indicates if the agent supports providing an extended agent card when authenticated.
   optional bool extended_agent_card = 4;
+  // Indicates if the agent accepts client-written artifacts (`ROLE_USER`) in
+  // `SendMessageRequest.artifact_updates`.
+  optional bool user_artifacts = 5;
 }
 
 // A declaration of a protocol extension supported by an Agent.
@@ -749,12 +755,20 @@ message SendMessageRequest {
   // Optional. Opaque routing identifier. Must match the `tenant` value from
   // the selected `AgentInterface` in the Agent Card when that field is set.
   string tenant = 1;
-  // The message to send to the agent.
-  Message message = 2 [(google.api.field_behavior) = REQUIRED];
+  // The message to send to the agent. Required when creating a task (when no
+  // `task_id` is provided); may be omitted only when sending `artifact_updates`
+  // to an existing task.
+  Message message = 2;
   // Configuration for the send request.
   SendMessageConfiguration configuration = 3;
   // A flexible key-value map for passing additional context or parameters.
   google.protobuf.Struct metadata = 4;
+  // Optional. Client-written artifact updates to send alongside `message` (for
+  // example, initial input artifacts when creating a task) or on their own to
+  // an existing task. Requires `AgentCard.capabilities.user_artifacts` to be
+  // `true`. The `generation` field on each update is owned by the server:
+  // clients MUST leave it unset and servers MUST ignore any value sent.
+  repeated TaskArtifactUpdateEvent artifact_updates = 5;
 }
 
 // A wrapper object used in streaming operations to encapsulate different types of client input.

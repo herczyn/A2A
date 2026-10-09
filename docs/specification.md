@@ -433,7 +433,7 @@ For detailed security guidance on extended agent cards, see [Section 13.3 Extend
 
 <span id="3112-send-live-message"></span>
 
-Exchanges messages with an agent over a live, bidirectional channel. The same operation serves a long-lived session, a brief connect-send-disconnect exchange, and attaching to a task to observe it.
+Exchanges messages and artifacts with an agent over a live, bidirectional channel. The same operation serves a long-lived session, a brief connect-send-disconnect exchange, and attaching to a task to observe it.
 
 **Inputs:**
 
@@ -489,6 +489,14 @@ This section defines common parameter objects used across multiple operations.
 #### 3.2.1. SendMessageRequest
 
 {{ proto_to_table("SendMessageRequest") }}
+
+**Client-written artifacts:**
+
+When `AgentCard.capabilities.userArtifacts` is `true`, a client MAY send one or more [`TaskArtifactUpdateEvent`](#422-taskartifactupdateevent) objects in `SendMessageRequest.artifactUpdates` — over unary [Send Message](#311-send-message), [Send Streaming Message](#312-send-streaming-message), or [Send Live Message](#3112-send-live-message) (`StreamRequest.sendMessage`). This makes the interaction symmetrical: [`Message`](#414-message) objects carry control and coordination turns in the task [`timeline`](#328-task-timeline-semantics), while [`Artifact`](#417-artifact) objects carry work items from either party (`role` is `ROLE_USER` for client-written artifacts and `ROLE_AGENT` by default for agent outputs).
+
+- **Creating vs. continuing a task:** `message` **MUST** be present when creating a new task (when no `taskId` is provided), as the agent requires a control message to know what to do with any accompanying `artifactUpdates`. When `artifactUpdates` are sent alongside a task-creating `message`, their `taskId` and `contextId` MAY be omitted and are assigned by the server. `message` MAY be omitted only when sending `artifactUpdates` to an existing task (`taskId` set on each update).
+- **Ordering and non-task responses:** When `message` and `artifactUpdates` are sent together and a `Task` is created or updated, the server appends `message` to `timeline` first and then applies `artifactUpdates` in list order, advancing `generation` for each. If the agent responds with a direct `Message` without creating a `Task`, neither `message` nor `artifactUpdates` is persisted in a task (matching the behaviour for `message` alone).
+- **Chunking and `generation` ownership:** Chunking works as it does for agent-written artifacts (`append` adds to the artifact with the same ID, `lastChunk` marks the final chunk). The client does not own `generation`: clients **MUST** leave `generation` unset on each sent `TaskArtifactUpdateEvent`, servers **MUST** ignore any value received, and the server assigns the authoritative value when broadcasting the resulting event downstream — placing the artifact in history via `startGeneration` and `endGeneration` (see [Task Timeline Semantics](#328-task-timeline-semantics)).
 
 #### 3.2.2. SendMessageConfiguration
 
@@ -712,6 +720,7 @@ Agents declare optional capabilities in their [`AgentCard`](#441-agentcard). Whe
 - **Push Notifications**: If `AgentCard.capabilities.pushNotifications` is `false` or not present, operations related to push notification configuration (Create, Get, List, Delete) **MUST** return [`PushNotificationNotSupportedError`](#332-error-handling).
 - **Streaming**: If `AgentCard.capabilities.streaming` is `false` or not present, attempts to use `SendStreamingMessage`, `SubscribeToTask`, or `SendLiveMessage` operations **MUST** return [`UnsupportedOperationError`](#332-error-handling).
 - **Extended Agent Card**: If `AgentCard.capabilities.extendedAgentCard` is `false` or not present, attempts to call the Get Extended Agent Card operation **MUST** return [`UnsupportedOperationError`](#332-error-handling). If the agent declares support but has not configured an extended card, it **MUST** return [`ExtendedAgentCardNotConfiguredError`](#332-error-handling).
+- **User Artifacts**: If `AgentCard.capabilities.userArtifacts` is `false` or not present, attempts to send `SendMessageRequest.artifactUpdates` **MUST** return [`UnsupportedOperationError`](#332-error-handling) (or [`StreamError`](#424-streamerror) on a live stream).
 - **Extensions**: When a server requests use of an extension marked as `required: true` in the Agent Card but the client does not declare support for it, the agent **MUST** return [`ExtensionSupportRequiredError`](#332-error-handling).
 
 Clients **SHOULD** validate capability support by examining the Agent Card before attempting operations that require optional capabilities.
