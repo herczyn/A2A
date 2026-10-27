@@ -1,17 +1,18 @@
 # Agent2Agent (A2A) Governance
 
-The Agent2Agent project is governed by the Technical Steering Committee. The Committee has eight seats, each held by the following companies:
+The Agent2Agent project is governed by the Technical Steering Committee. The Committee has nine seats, each held by the following companies:
 
 | Company | Representative | Title | Contact |
 | :--- | :--- | :--- | :--- |
-| **Google** | Todd Segal | Principal Engineer | [@ToddSegal](https://github.com/ToddSegal) |
+ | **Google** | Todd Segal | Distinguished Engineer | [@ToddSegal](https://github.com/ToddSegal) |
 | **Microsoft** | Darrel Miller | Partner API Architect | [@darrelmiller](https://github.com/darrelmiller) |
 | **Cisco** | Luca Muscariello | Distinguished Engineer | [@muscariello](https://github.com/muscariello) |
 | **Amazon Web Services** | Abhimanyu Siwach | Senior Software Engineer | [@siwachabhi](https://github.com/siwachabhi) |
 | **Salesforce** | Stephen Petschulat | Principal Architect | [@spetschulatSFDC](https://github.com/spetschulatSFDC) |
-| **ServiceNow** | Sean Hughes | Director of Open Science | [@hughesthe1st](https://github.com/hughesthe1st) |
+| **ServiceNow** | Sugandh Rakha | Head of Product (MCP & A2A) | [@sugandhrakha](https://github.com/sugandhrakha) |
 | **SAP** | Sivakumar N. | Vice President | [@SivaNSAP](https://github.com/SivaNSAP) |
-| **IBM Research** | Kate Blair | Director of Incubation | [@geneknit](https://github.com/geneknit) |
+| **IBM** | Stefano Maestri | Principal Software Engineer | [@maeste](https://github.com/maeste) |
+| **Bloomberg** | Vinay Ramesh | AI Team Lead | [@vinoo999](https://github.com/vinoo999) |
 
 ## Mission and Scope of the Project
 
@@ -75,9 +76,11 @@ A voting member who has not attended a meeting of the TSC within the last six we
 TSC Meetings are held on the Linux Foundation's meeting platform. [https://zoom-lfx.platform.linuxfoundation.org/meetings/agent2agent](https://zoom-lfx.platform.linuxfoundation.org/meetings/agent2agent) has meeting details and recordings of past meetings. 
 Our [working doc for TSC Meeting Agendas](https://docs.google.com/document/d/1Dx6qYfCjSChHKRMwLJcvtDjq6igYTAKFW9Vg1IMPCUk/view) is in Google Docs.
 
+All project meetings are subject to the [LF Projects Antitrust Policy](ANTITRUST.md).
+
 ## Project Communications
 
-The A2A project utilizes Discord for chat conversations about the project. All are welcome and encouraged to join the [A2A Discord](http://discord.gg/a2aprotocol). Discussion is encouraged however we do remind the community that chat is ephemeral, and not all members of the project are active in chat at the same time.
+The A2A project utilizes Discord for chat conversations about the project. All are welcome and encouraged to join the [A2A Discord](https://discord.gg/a2aprotocol). Discussion is encouraged however we do remind the community that chat is ephemeral, and not all members of the project are active in chat at the same time.
 
 Therefore, any discussions about feature proposals, significant changes to the project architecture or governance, etc. should be held in GitHub with adequate notice and time for comment. Look for specifics on that timing coming soon as the TSC ramps up. Just keep in mind - our goal is that GitHub is the source of truth for significant project decisions.
 
