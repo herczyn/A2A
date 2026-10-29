@@ -459,7 +459,7 @@ Each payload names the task it applies to, so `StreamRequest` carries no task id
 
 **Opening a stream:**
 
-The first request of a stream determines what the stream is attached to, and it binds the stream to exactly one task for its lifetime.
+The first request of a stream determines what the stream is attached to, and it binds the stream to the target task (and, if attached via `SendMessageConfiguration.parentTask`, its parent task) for its lifetime.
 
 - **Opening with `sendMessage` ([`SendMessageRequest`](#321-sendmessagerequest))** sends input immediately. The server appends the message to the task [`timeline`](#328-task-timeline-semantics), then opens with a `Task` snapshot that **already reflects** the appended message, and streams onward from that point. If `message.taskId` is unset, the agent creates the task; if set, it continues that task.
 - **Opening with `subscribe` ([`SubscribeToTaskRequest`](#316-subscribe-to-task))** attaches to the task named by `id` without sending input — for a client that wants to observe, or to resume observing after a disconnect.
@@ -471,10 +471,18 @@ The first request of a stream determines what the stream is attached to, and it 
 
 **Subsequent requests:**
 
-- Later requests apply to the task the stream is bound to. A request naming a different task **MUST** be rejected with a `StreamError`.
+- Later requests apply to the task the stream is bound to (or to its attached parent task). A request naming any other task **MUST** be rejected with a `StreamError`.
 - An uplink call that is not the downlink call MUST return only an acknowledgement — the current [`Task`](#411-task) state — and MUST NOT replay task events. All task events MUST be delivered on the downlink, so a client with both open never receives an event twice.
 - Ordering is by arrival. Each accepted client message is appended to the task [`timeline`](#328-task-timeline-semantics) and advances `generation` (see [Task Generation Semantics](#327-task-generation-semantics)).
 - `SendMessageRequest.configuration` applies only to the request it accompanies. `returnImmediately` is ignored, since the exchange is already streaming. A `taskPushNotificationConfig` supplied here is equivalent to calling [Create Push Notification Config](#317-create-push-notification-config) and is observable through [List Push Notification Configs](#319-list-push-notification-configs) rather than on the event stream.
+
+**Parent and child task synchronisation:**
+
+When a stream is attached to both a child task and a parent task (see `parentTask` in [`SendMessageConfiguration`](#322-sendmessageconfiguration)), both agents can exchange updates for both tasks over the same stream:
+
+- **Parent to child (`StreamRequest.parentEvent`):** The caller (owner of the parent task) MAY forward any parent-task [`StreamResponse`](#323-stream-response) event — `statusUpdate`, `artifactUpdate`, `messageUpdate`, a resync `task` snapshot, or a `StreamError` rejecting an invalid parent-task write from the child — to the child agent via `StreamRequest.parentEvent`, keeping the child synchronised with the parent task.
+- **Child to parent (`StreamResponse` targeting `parentTask.taskId`):** The child agent MAY emit `artifactUpdate`, `messageUpdate`, and `error` frames on `StreamResponse` whose `taskId` is the parent task's ID, allowing one or more child agents to contribute shared work items (`Artifact.sender` identifying the contributor) and coordination messages (`Message.sender`) directly to the parent task. `task` snapshots and `statusUpdate` events on `StreamResponse` **MUST** target only the child task's own ID, as the parent task's lifecycle state is controlled solely by the parent task's owner.
+- **Per-task `generation` ownership:** Each task's `generation` is owned by that task's owner. Events emitted by a task's owner carry the authoritative post-mutation `generation`. When the child emits an `artifactUpdate` or `messageUpdate` targeting the parent task (or the caller sends an update targeting the child task), the sender **MUST** leave `generation` unset; the receiving task owner assigns the authoritative `generation` and broadcasts the resulting event to all subscribers of that task (including sibling child tasks via `parentEvent`).
 
 **Rejecting a single request:**
 
@@ -521,6 +529,14 @@ The `return_immediately` field has no effect:
 The `ifGenerationMatch` field enables optimistic concurrency control when sending a follow-up message to an existing task. If set, the server **MUST** compare the provided value against the task's current `generation` at the time the message is processed. If the values do not match, the server **MUST** reject the request with [`TaskGenerationMismatchError`](#332-error-handling) (HTTP `409 Conflict` / gRPC `ABORTED`). If the task referenced by the message does not yet exist (i.e., a new task will be created), this field **MUST** be ignored.
 
 See [Task Generation Semantics](#327-task-generation-semantics) for the full description of the `generation` field.
+
+**Parent Task Attachment with `parentTask`:**
+
+When an agent delegates work to another agent by creating a new task (`message.taskId` unset), it MAY include a snapshot of its current task in `SendMessageConfiguration.parentTask`. When provided:
+
+- The receiving agent receives the parent task's initial state (including its `timeline` and `artifacts`) as shared context without the caller having to copy them into `message.parts`.
+- The newly created child [`Task`](#411-task) populates `Task.parentTask` ([`ParentTask`](#419-parenttask)) with `taskId` set to `parentTask.id` and `sender` identifying the parent task's owner (populated from the authenticated caller identity or supplied by the caller, following the same attribution model as `Message.sender` and `Artifact.sender`).
+- If the call is made over [Send Live Message](#3112-send-live-message), the stream is bound to both the child task and the parent task so updates to either task can flow in both directions (see *Parent and child task synchronisation* in [Section 3.1.12](#3112-send-live-message)).
 
 #### 3.2.3. Stream Response
 
@@ -989,6 +1005,14 @@ An interrupted state signals that the agent is awaiting client input (`TASK_STAT
 {{ proto_to_table("TimelineEntry") }}
 
 See [Task Timeline Semantics](#328-task-timeline-semantics).
+
+<a id="ParentTask"></a>
+
+#### 4.1.9. ParentTask
+
+{{ proto_to_table("ParentTask") }}
+
+See [SendMessageConfiguration](#322-sendmessageconfiguration) and [Send Live Message](#3112-send-live-message).
 
 ### 4.2. Streaming Events
 
